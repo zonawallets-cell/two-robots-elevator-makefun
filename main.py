@@ -48,9 +48,11 @@ def main():
     with open(path, "w", encoding="utf-8", newline="\n") as handle:
         handle.write(LINE + "\n")
 
-    with open(path, "r", encoding="utf-8") as handle:
-        written = handle.read()
-    written_problems = validate(written.rstrip("\n"))
+    with open(path, "rb") as handle:
+        written_bytes = handle.read()
+    if written_bytes != (LINE + "\n").encode("utf-8"):
+        raise SystemExit("written file is not byte-identical to the entry line")
+    written_problems = validate(written_bytes.decode("utf-8").rstrip("\n"))
     if written_problems:
         raise SystemExit("written file failed validation: " + "; ".join(written_problems))
     print("wrote %s (%d characters)" % (path, len(LINE)))
